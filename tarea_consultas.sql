@@ -1,3 +1,6 @@
+#Prresentado por Santiago Rojas Rodríguez y Sebastian Ramirwz
+#ficha: 2722493
+#presentado a: Jenny Vasquez
 create database Empresa;
 use Empresa;
 
@@ -52,7 +55,7 @@ CREATE TABLE Empleado (
     sexo varchar(10),
     fecha_nacimiento date,
     fecha_incorporacion date,
-    salario bigint,
+    salario int,
     id_cargo int,
     id_jefe bigint,
     id_deposito int,
@@ -93,9 +96,9 @@ INSERT INTO Empleado (id, nombre, sexo, fecha_nacimiento, fecha_incorporacion, s
 INSERT INTO Empleado (id, nombre, sexo, fecha_nacimiento, fecha_incorporacion, salario, id_cargo, id_jefe, id_deposito) VALUES
 (1178144, 'Diana Solarte', 'F', '1957-11-19', '1990-06-15', 1250000,11,31840269 , '1000');
 INSERT INTO Empleado (id, nombre, sexo, fecha_nacimiento, fecha_incorporacion, salario, id_cargo, id_jefe, id_deposito) VALUES
-(1130777, 'Marcos Cortez', 'M', '1986-06-23', '2000-04-16', 2550000,12 ,333333333 , '4000');
+(1130777, 'Marcos Cortez', 'M', '1986-06-23', '2000-04-16', 2550000,11 ,333333333 , '4000');
 INSERT INTO Empleado (id, nombre, sexo, fecha_nacimiento, fecha_incorporacion, salario, id_cargo, id_jefe, id_deposito) VALUES
-(1130782, 'Antonio Gil', 'M', '1980-01-23', '200-04-16', 850000, 12, 16211383,'1500');
+(1130782, 'Antonio Gil', 'M', '1980-01-23', '200-04-16', 850000, 11, 16211383,'1500');
 INSERT INTO Empleado (id, nombre, sexo, fecha_nacimiento, fecha_incorporacion, salario, id_cargo, id_jefe, id_deposito) VALUES
 (333333334, 'Marisol Pulido', 'F','1979-01-10','1990-05-16', 3250000,4,16759060, '3000');
 INSERT INTO Empleado (id, nombre, sexo, fecha_nacimiento, fecha_incorporacion, salario, id_cargo, id_jefe, id_deposito) VALUES
@@ -115,6 +118,8 @@ INSERT INTO Empleado (id, nombre, sexo, fecha_nacimiento, fecha_incorporacion, s
 
 
 #Hacer las relaciones y registrar datos en cada tabla
+
+#taller
 #1. Obtener los datos completos de los empleados.
 select * from Empleado;
 #2. Obtener los datos completos de los departamentos. 
@@ -185,33 +190,148 @@ select * from Empleado;
 #24. Divida los empleados, generando un grupo cuyo nombre inicie por la letra J y termine en la letra Z. Liste estos empleados y su cargo por orden alfabético.
 select E.nombre, C.nom_cargo from Empleado E join Cargo C  on E.id_cargo = C.id_cargo = C.id_cargo where E.nombre like 'J%Z' order by E.nombre;
 #25. Listar el salario, documento de identidad del empleado y nombre, de aquellos empleados que tienen sueldo superior a $1.100.000, ordenar el informe por el número del documento de identidad
-select id, nombre, salario from Empleado where salario > 1000000 order by id ;
+select id, nombre, salario from Empleado where salario > 1100000 order by id ;
 #26. Obtener un listado similar al anterior, pero de aquellos empleados que ganan hasta 3.300.000
 select id, nombre, salario from Empleado where salario  order by id limit 3000000;
 
 #27. Hallar el nombre de los empleados que tienen un salario superior a $1.000.000, y tienen como jefe al empleado con documento de identidad '31.840.269'
+SELECT nombre, salario, id_jefe
+FROM Empleado
+WHERE Salario > 1000000
+ AND id_jefe = (
+ SELECT id_jefe
+ FROM Empleado
+ WHERE id_jefe = '31840269'
+ limit 1)
+ ;
 #28. Hallar el conjunto complementario del resultado del ejercicio anterior.
+  SELECT id_jefe
+    FROM Empleado
+    WHERE id_jefe = '31840269'
+    ; 
+    
 #29. Hallar los empleados cuyo nombre no contiene la cadena “MA” 
+select nombre from Empleado where nombre not like '%Ma%';
+
 #30. Obtener los nombres de los departamentos que no sean “Ventas” ni “Investigación” NI ‘MANTENIMIENTO’, ordenados por ciudad.
+select nom_deposito from Departamento where nom_deposito not in ('VENTAS', 'INVESTIGACION','MANTENIMIENTO') order by ciudad;
+
 #31. Obtener el nombre y el departamento de los empleados con cargo 'Secretaria' o 'Vendedor', que no trabajan en el departamento de “PRODUCCION”, cuyo salario es superior a $1.000.000, ordenados por fecha de incorporación.
+SELECT E.nombre,C.nom_cargo , D.nom_deposito, E.Salario
+FROM Empleado E
+JOIN Cargo C ON E.id_cargo = C.id_cargo
+JOIN Departamento D on E. id_deposito = D.id_deposito where nom_cargo  in( 'SECRETARIA', 'VENDEDOR') and nom_deposito not in ('PRODUCCION') AND salario > 1000000;
+
 #32. Obtener información de los empleados cuyo nombre tiene exactamente 11 caracteres
+select *, length(nombre)  from Empleado where length(nombre)  = '11'; 
 #33. Obtener información de los empleados cuyo nombre tiene al menos 11 caracteres
+select *, length(nombre)  from Empleado where length(nombre)  >= '11'; 
+
 #34. Listar los datos de los empleados cuyo nombre inicia por la letra 'M', su salario es mayor a $800.000 y trabajan para el departamento de 'VENTAS'
+SELECT E.nombre, D.nom_deposito, E.Salario
+FROM Empleado E
+JOIN Cargo C ON E.id_cargo = C.id_cargo
+JOIN Departamento D on E. id_deposito = D.id_deposito where salario > 800000 and  nom_deposito = 'VENTAS' AND nombre LIKE 'M%' ;
+
 #35. Obtener los nombres, salarios de los empleados que reciben un salario promedio
-#36. Suponga que la empresa va a aplicar un reajuste salarial del 7%. Listar los nombres de los empleados, su salario actual y su nuevo salario37. Obtener la información disponible del empleado cuyo número de documento de identidad sea: '31.178.144', '16.759.060', '1.751.219', '768.782', '737.689', '19.709.802', '31.174.099', '1.130.782'
+SELECT nombre, salario
+FROM Empleado
+GROUP BY nombre, salario
+HAVING avg(salario) = salario;
+
+#36. Suponga que la empresa va a aplicar un reajuste salarial del 7%. Listar los nombres de los empleados, su salario actual y su nuevo salario
+#35. Obtener los nombres, salarios de los empleados que reciben un salario promedio
+SELECT nombre, salario as salario_antiguo , salario * 0.70 as salario_nuevo
+FROM Empleado;
+
+
+#37. Obtener la información disponible del empleado cuyo número de documento de identidad sea: '31.178.144', '16.759.060', '1.751.219', '768.782', '737.689', '19.709.802', '31.174.099', '1.130.782'
+select * from Empleado  where id in ('31178144', '16759060', '1751219', '768782', '737689', '19709802', '31174099', '1130782');
+
 #38. Entregar un listado de todos los empleados ordenado por su departamento, y alfabético dentro del departamento.
+SELECT E.nombre, D.nom_deposito
+FROM Empleado E
+JOIN Departamento D on E. id_deposito = D.id_deposito  order by nom_deposito, nombre ASC;
+
+
 #39. Entregar el salario más alto de la empresa.
+select  max(salario) from Empleado;
+
 #40. Entregar el total a pagar por salario y el número de empleados que las reciben.
+SELECT SUM(salario) AS total_a_pagar_por_salario, COUNT(*) AS numero_empleados_que_las_reciben FROM Empleado;
+
 #41. Entregar el nombre del último empleado de la lista por orden alfabético.
+select nombre from Empleado order by nombre desc limit 1;
 #42. Hallar el salario más alto, el más bajo y la diferencia entre ellos.
+SELECT MAX(salario) AS Salario_más_alto_de_la_empresa, MIN(salario) AS Salario_más_bajo_de_la_empresa, MAX(salario) - MIN(salario) AS Diferencia_entre_ellos FROM Empleado;
+
 #43. Conocido el resultado anterior, entregar el nombre de los empleados que reciben el salario más alto y más bajo. ¿Cuanto suman estos salarios?
+SELECT nombre as empleado_salario_maximo,MAX(salario) AS Salario_más_alto_de_la_empresa, nombre as empleado_salario_bajo, MIN(salario) AS Salario_más_bajo_de_la_empresa, MAX(salario) + MIN(salario) AS Suma_entre_ellos FROM Empleado group by nombre;
+
+
 #44. Entregar el número de empleados de sexo femenino y de sexo masculino, por departamento.
+SELECT nom_deposito, COUNT(sexo) AS sexo_femenino, COUNT(sexo) AS sexo_masculino
+FROM Empleado E
+INNER JOIN Departamento D ON E.id_deposito = D.id_deposito
+GROUP BY nom_deposito;
+
 #45. Hallar el salario promedio por departamento.
+SELECT AVG(E.salario) AS salario_promedio, D.nom_deposito
+FROM Empleado E
+JOIN Departamento D ON E.id_deposito = D.id_deposito
+GROUP BY D.nom_deposito;
+
 #46. Hallar el salario promedio por departamento, considerando aquellos empleados cuyo salario supera $900.000, y aquellos con salarios inferiores a $575.000. Entregar el código y el nombre del departamento.
+SELECT AVG(E.salario) AS salario_promedio, D.id_deposito, D.nom_deposito
+FROM Empleado E
+INNER JOIN Departamento D ON E.id_deposito = D.id_deposito
+WHERE E.salario > 900000 OR E.salario < 575000
+GROUP BY D.id_deposito, D.nom_deposito;
+
 #47. Entregar la lista de los empleados cuyo salario es mayor o igual que el promedio de la empresa. Ordenarlo por departamento.
-#48. Hallar los departamentos que tienen más de tres (3) empleados. Entregar el número de empleados de esosdepartamentos.
+SELECT E.nombre, D.nom_deposito, E.salario
+FROM Empleado E
+INNER JOIN Departamento D ON E.id_deposito = D.id_deposito
+WHERE E.salario >= (SELECT AVG(salario) FROM Empleado)
+GROUP BY E.nombre, D.nom_deposito, E.salario
+ORDER BY D.nom_deposito;
+
+
+#48. Hallar los departamentos que tienen más de tres (3) empleados. Entregar el número de empleados de esos departamentos.
+SELECT D.nom_deposito, COUNT(E.nombre) as empleados_total
+FROM Empleado E
+INNER JOIN Departamento D ON E.id_deposito = D.id_deposito
+GROUP BY D.nom_deposito
+HAVING COUNT(E.nombre) >= 3;
+
 #49. Obtener la lista de empleados jefes, que tienen al menos un empleado a su cargo. Ordene el informe inversamente por el nombre.
+SELECT COUNT(*) as empleado_total, E.nombre, E.id_cargo, nom_cargo 
+FROM Empleado E
+JOIN Cargo C ON E.id_cargo = C.id_cargo where C.id_cargo in (3 , 6) group by E.nombre, id_cargo, nom_cargo;
+
 #50. Hallar los departamentos que no tienen empleados
+SELECT D.nom_deposito, COUNT(E.nombre) as empleados
+FROM Empleado E
+INNER JOIN Departamento D ON E.id_deposito = D.id_deposito
+GROUP BY D.nom_deposito
+HAVING COUNT(E.nombre) = 0;
+
+
 #51. Entregar un reporte con el número de cargos en cada departamento y cuál es el promedio de salario de cada uno. Indique el nombre del departamento en el resultado.
+SELECT COUNT(E.id_cargo) AS numero_cargos, AVG(E.salario) AS salario_promedio, D.id_deposito, D.nom_deposito
+FROM Empleado E
+INNER JOIN Departamento D ON E.id_deposito = D.id_deposito
+GROUP BY D.id_deposito,D.nom_deposito;
+
+
 #52. Entregar el nombre del departamento cuya suma de salarios sea la más alta, indicando el valor de la suma.
+select sum(salario) as salario_alto, D.nom_deposito
+FROM Empleado E
+INNER JOIN Departamento D ON E.id_deposito = D.id_deposito
+group by D.nom_deposito order by nom_deposito desc limit 1;
+
 #53. Entregar un reporte con el código y nombre de cada jefe, junto al número de empleados que dirige. Puede haber empleados que no tengan supervisores, para esto se indicará solamente el número de ellos dejando los valores
+SELECT COUNT(*) as empleado_total, E.nombre, E.id_cargo, nom_cargo
+FROM Empleado E
+JOIN Cargo C ON E.id_cargo = C.id_cargo
+GROUP BY E.nombre, E.id_cargo, nom_cargo;
